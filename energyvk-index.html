@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Насколько хорошо ты слышишь себя? — мини-тест</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1a1410;
+    --cream: #f5f0e8;
+    --warm: #e8ddd0;
+    --gold: #b8924a;
+    --gold-light: #d4ac6a;
+    --rust: #8b4a2a;
+    --rust-dark: #6e3a20;
+    --muted: #7a6e64;
+    --card-bg: #faf7f2;
+  }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Background texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(ellipse 60% 40% at 15% 20%, rgba(184,146,74,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 60% at 85% 80%, rgba(139,74,42,0.06) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: 560px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* SCREENS */
+  .screen { display: none; animation: fadeIn 0.5s ease both; }
+  .screen.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .deco-line {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .deco-line::before, .deco-line::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .deco-star {
+    font-size: 18px;
+    color: var(--gold);
+    letter-spacing: 6px;
+  }
+
+  .intro-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(30px, 6.6vw, 46px);
+    font-weight: 300;
+    line-height: 1.2;
+    text-align: center;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  h1 em {
+    font-style: italic;
+    color: var(--rust);
+  }
+
+  .subtitle {
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.6;
+    margin-bottom: 28px;
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .intro-list-wrap {
+    background: var(--card-bg);
+    border: 1px solid rgba(184,146,74,0.2);
+    border-radius: 4px;
+    padding: 22px 24px;
+    margin-bottom: 28px;
+  }
+  .intro-list-title {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .intro-list { list-style: none; }
+  .intro-list li {
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: #3d3530;
+    padding-left: 18px;
+    position: relative;
+    margin-bottom: 8px;
+  }
+  .intro-list li:last-child { margin-bottom: 0; }
+  .intro-list li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+  }
+
+  .start-note {
+    font-size: 12px;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.5;
+    margin-top: 14px;
+  }
+
+  /* PROGRESS */
+  .progress-wrap { margin-bottom: 32px; }
+  .progress-track {
+    height: 2px;
+    background: var(--warm);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+  .progress-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: right;
+  }
+
+  /* QUESTION CARD */
+  .q-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(184,146,74,0.2);
+    border-radius: 4px;
+    padding: 32px 28px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .q-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+  }
+
+  .q-number {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+
+  .q-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(19px, 3.8vw, 25px);
+    font-weight: 400;
+    line-height: 1.35;
+    color: var(--ink);
+    margin-bottom: 28px;
+  }
+
+  /* ANSWER OPTIONS */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border: 1px solid rgba(184,146,74,0.25);
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: transparent;
+    width: 100%;
+    text-align: left;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--ink);
+  }
+
+  .option:hover {
+    border-color: var(--gold);
+    background: rgba(184,146,74,0.05);
+  }
+
+  .option.selected {
+    border-color: var(--gold);
+    background: rgba(184,146,74,0.08);
+  }
+
+  .option-dot {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid rgba(184,146,74,0.4);
+    border-radius: 50%;
+    flex-shrink: 0;
+    position: relative;
+    transition: all 0.2s ease;
+  }
+
+  .option.selected .option-dot {
+    border-color: var(--gold);
+    background: var(--gold);
+  }
+
+  .option.selected .option-dot::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: white;
+  }
+
+  /* BUTTONS */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 16px 24px;
+    background: var(--ink);
+    color: var(--cream);
+    border: none;
+    border-radius: 3px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn:hover {
+    background: #2d2520;
+    transform: translateY(-1px);
+  }
+
+  .btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid rgba(122,110,100,0.3);
+    margin-top: 10px;
+  }
+  .btn-ghost:hover {
+    background: rgba(122,110,100,0.06);
+    color: var(--ink);
+  }
+
+  .btn-burgundy {
+    background: linear-gradient(135deg, var(--rust), var(--rust-dark));
+    color: var(--cream);
+    font-size: 15px;
+    padding: 18px 24px;
+  }
+  .btn-burgundy:hover {
+    background: linear-gradient(135deg, var(--rust-dark), #5a2f19);
+  }
+
+  /* START SCREEN */
+  .start-ornament {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 24px;
+    letter-spacing: 8px;
+    color: var(--gold);
+    opacity: 0.7;
+  }
+
+  /* RESULT SCREEN */
+  .result-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(184,146,74,0.2);
+    border-radius: 4px;
+    padding: 36px 28px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .result-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--rust), var(--gold), var(--gold-light));
+  }
+
+  .result-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(24px, 5.5vw, 32px);
+    font-weight: 400;
+    text-align: center;
+    line-height: 1.3;
+    margin-bottom: 20px;
+    color: var(--ink);
+  }
+
+  .result-title em { font-style: italic; color: var(--rust); }
+
+  .result-divider {
+    width: 40px;
+    height: 1px;
+    background: var(--gold);
+    margin: 20px auto;
+  }
+
+  .result-text {
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: #3d3530;
+    margin-bottom: 16px;
+  }
+
+  .result-text strong {
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  /* Point of attention */
+  .point-block {
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(184,146,74,0.18);
+  }
+  .point-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+  .point-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 23px;
+    color: var(--rust);
+    margin-bottom: 14px;
+  }
+
+  /* Spheres */
+  .spheres-block {
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(184,146,74,0.18);
+  }
+  .spheres-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 14px;
+  }
+  .spheres-list { list-style: none; margin-bottom: 22px; }
+  .spheres-list li {
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.65;
+    color: #3d3530;
+    padding-left: 18px;
+    position: relative;
+    margin-bottom: 10px;
+  }
+  .spheres-list li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+  }
+  .spheres-list li strong { font-weight: 500; color: var(--ink); }
+
+  .sphere-select-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 12px;
+  }
+  .sphere-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .sphere-option {
+    padding: 12px 16px;
+    border: 1px solid rgba(184,146,74,0.25);
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: transparent;
+    width: 100%;
+    text-align: left;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--ink);
+  }
+  .sphere-option:hover {
+    border-color: var(--gold);
+    background: rgba(184,146,74,0.05);
+  }
+  .sphere-option.selected {
+    border-color: var(--rust);
+    background: rgba(139,74,42,0.07);
+    color: var(--rust-dark);
+    font-weight: 500;
+  }
+
+  /* Offer */
+  .offer-block {
+    margin-top: 8px;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.5s ease, opacity 0.5s ease, margin-top 0.5s ease;
+  }
+  .offer-block.open {
+    max-height: 2400px;
+    opacity: 1;
+    margin-top: 28px;
+  }
+  .offer-intro {
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: #3d3530;
+    padding-top: 24px;
+    border-top: 1px solid rgba(184,146,74,0.18);
+    margin-bottom: 20px;
+  }
+
+  .cta-block {
+    background: linear-gradient(135deg, rgba(139,74,42,0.06), rgba(184,146,74,0.08));
+    border: 1px solid rgba(184,146,74,0.25);
+    border-radius: 3px;
+    padding: 26px 22px;
+  }
+
+  .cta-heading {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 21px;
+    font-weight: 400;
+    line-height: 1.35;
+    color: var(--ink);
+    margin-bottom: 16px;
+  }
+
+  .cta-block p {
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.65;
+    color: #3d3530;
+    margin-bottom: 14px;
+  }
+
+  .cta-product {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px;
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1.3;
+    color: var(--rust);
+    margin: 22px 0 14px;
+  }
+
+  .cta-sublabel {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+
+  .cta-list { list-style: none; margin-bottom: 16px; }
+  .cta-list li {
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: #3d3530;
+    padding-left: 16px;
+    position: relative;
+    margin-bottom: 6px;
+  }
+  .cta-list li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+  }
+
+  .cta-price {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 30px;
+    font-weight: 600;
+    color: var(--rust);
+    margin: 16px 0 18px;
+  }
+
+  .message-preview {
+    background: var(--card-bg);
+    border: 1px dashed rgba(139,74,42,0.35);
+    border-radius: 3px;
+    padding: 14px 16px;
+    font-size: 12.5px;
+    font-style: italic;
+    line-height: 1.6;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  .cta-buttons {
+    display: flex;
+    gap: 10px;
+  }
+  .cta-btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 15px 14px;
+    border: none;
+    border-radius: 3px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13.5px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: white;
+  }
+  .cta-btn-tg { background: #2AABEE; }
+  .cta-btn-tg:hover { background: #1e99d6; transform: translateY(-1px); }
+  .cta-btn-vk { background: #0077FF; }
+  .cta-btn-vk:hover { background: #0066dd; transform: translateY(-1px); }
+  @media (max-width: 380px) {
+    .cta-buttons { flex-direction: column; }
+  }
+
+  .cta-note {
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-top: 14px;
+    margin-bottom: 0;
+    font-style: italic;
+    text-align: center;
+  }
+
+  .signature {
+    margin-top: 22px;
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--muted);
+    text-align: center;
+  }
+  .signature strong {
+    font-weight: 500;
+    color: var(--ink);
+    font-style: normal;
+  }
+
+  .review-card {
+    margin-top: 18px;
+    padding: 18px 20px;
+    background: rgba(184,146,74,0.06);
+    border-left: 2px solid var(--gold);
+    font-size: 13px;
+    font-style: italic;
+    line-height: 1.65;
+    color: #3d3530;
+  }
+  .review-card .review-author {
+    display: block;
+    margin-top: 8px;
+    font-size: 11px;
+    font-style: normal;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .restart-link { text-align: center; margin-top: 14px; }
+  .restart-link button {
+    background: none;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--muted);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    padding: 4px;
+  }
+  .restart-link button:hover { color: var(--ink); }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- START SCREEN -->
+  <div class="screen active" id="screen-start">
+    <div class="intro-label">Мини-тест</div>
+    <div class="start-ornament">✦ ✦ ✦</div>
+    <h1>Насколько хорошо ты сейчас<br><em>слышишь себя?</em></h1>
+    <p class="subtitle">10 жизненных ситуаций помогут увидеть, в какие моменты ты перестаёшь учитывать свои желания, состояние и потребности.</p>
+
+    <div class="intro-list-wrap">
+      <div class="intro-list-title">В конце ты узнаешь</div>
+      <ul class="intro-list">
+        <li>насколько устойчив сейчас контакт с собой;</li>
+        <li>где именно ты чаще себя отодвигаешь;</li>
+        <li>как это может проявляться в деньгах, отношениях и реализации.</li>
+      </ul>
+    </div>
+
+    <div class="deco-line"><span class="deco-star">✦</span></div>
+    <button class="btn" onclick="startQuiz()">Пройти тест →</button>
+    <p class="start-note">Займёт около 3 минут. Здесь нет правильных ответов — выбирай тот, который ближе к твоей реальной реакции.</p>
+  </div>
+
+  <!-- QUESTION SCREEN -->
+  <div class="screen" id="screen-question">
+    <div class="progress-wrap">
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+      </div>
+      <div class="progress-label" id="progress-label">1 / 10</div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-number" id="q-number">Вопрос 01</div>
+      <div class="q-text" id="q-text"></div>
+      <div class="options" id="options-wrap"></div>
+    </div>
+
+    <button class="btn" id="btn-next" onclick="nextQuestion()" disabled>Следующий вопрос →</button>
+    <button class="btn btn-ghost" onclick="prevQuestion()" id="btn-back">← Назад</button>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div class="screen" id="screen-result">
+    <div class="result-card">
+      <h1 class="result-title" id="result-title"></h1>
+      <div class="result-divider"></div>
+      <p class="result-text" id="result-main"></p>
+
+      <div class="point-block">
+        <div class="point-label" id="point-label">Главная точка внимания</div>
+        <div class="point-name" id="point-name"></div>
+        <p class="result-text" id="point-text"></p>
+      </div>
+
+      <div class="spheres-block">
+        <div class="spheres-title">Как это может проявляться в жизни</div>
+        <ul class="spheres-list">
+          <li><strong>В деньгах:</strong> сложно называть цену, выбирать выгодные условия, признавать ценность своего труда или отказываться от работы, которая забирает слишком много сил.</li>
+          <li><strong>В отношениях:</strong> можно соглашаться из страха обидеть, терпеть неудобное или ждать, что близкий человек сам догадается о твоих потребностях.</li>
+          <li><strong>В проявленности:</strong> хочется сначала стать увереннее, подготовленнее и правильнее, а уже потом показывать себя и свои идеи.</li>
+        </ul>
+
+        <div class="sphere-select-title">Где это сейчас мешает тебе сильнее всего?</div>
+        <div class="sphere-options" id="sphere-options"></div>
+      </div>
+
+      <div class="offer-block" id="offer-block">
+        <p class="offer-intro" id="offer-intro"></p>
+
+        <div class="cta-block">
+          <div class="cta-heading">Тест показал, где ты можешь переставать слышать себя. Но он не покажет, что стоит за этой реакцией</div>
+          <p>Можно понимать, что пора отдыхать, отказывать, меньше зависеть от чужого мнения и чаще выбирать себя. Но в реальной ситуации снова автоматически поступать по-старому.</p>
+          <p>Причина не всегда лежит на поверхности. За этим может стоять страх осуждения, чувство вины, привычка заслуживать любовь, внутренний запрет на собственные желания или ситуация, которую ты до сих пор не смогла увидеть со стороны.</p>
+
+          <div class="cta-sublabel">Персональный расклад Таро</div>
+          <div class="cta-product">«Где я теряю себя и как к себе вернуться?»</div>
+
+          <p style="margin-bottom:8px">В раскладе посмотрим:</p>
+          <ul class="cta-list">
+            <li>что сейчас заглушает твой внутренний голос;</li>
+            <li>какую потребность или чувство ты не замечаешь;</li>
+            <li>где ты отдаёшь слишком много энергии;</li>
+            <li>что заставляет действовать из «надо»;</li>
+            <li>от чего тебе важно отказаться;</li>
+            <li>на что можно опереться;</li>
+            <li>какой первый шаг поможет вернуть больше ясности.</li>
+          </ul>
+
+          <p>Таро не будет принимать решения за тебя. Расклад поможет честно увидеть ситуацию и понять, куда направить внимание и действия.</p>
+
+          <div class="cta-price">2 500 ₽</div>
+
+          <div class="message-preview" id="message-preview"></div>
+
+          <div class="cta-buttons">
+            <button class="cta-btn cta-btn-tg" id="btn-order-tg" onclick="orderTelegram()">✈️ Заказать в Telegram</button>
+            <button class="cta-btn cta-btn-vk" id="btn-order-vk" onclick="orderVk()">Заказать в VK</button>
+          </div>
+          <p class="cta-note">В Telegram сообщение подставится в чат автоматически. В VK — скопируется в буфер, вставь его первым сообщением.</p>
+
+          <div class="signature"><strong>Евгения Вакорина</strong> — астропсихолог и таролог.<br>Помогаю увидеть причины повторяющихся ситуаций и принимать решения с большей ясностью.</div>
+
+          <div class="review-card">
+            Классно 🔥🔥 Спасибо огромное, теперь у меня появилось ясное представление о том, как будут развиваться наши отношения, а также поняла свои мотивы в отношениях. Скорее хотела бы ещё с тобой поработать с вопросом подсознательных причин своих. В целом расклад мне очень понравился, все чётко 🔥<br><br>
+            До того как я пришла на расклад Таро у меня была тревога и я начинала себя накручивать, а сейчас появилось ясность и спокойствие внутри ❤️<br><br>
+            Евгения, была за расклад ❤️❤️ Буду тебя рекомендовать своим подружкам
+            <span class="review-author">— клиентка, расклад по отношениям</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="restart-link">
+      <button onclick="restartQuiz()">Пройти заново</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ===== DATA ===== */
+
+// pair: 1 = ценность результатов, 2 = границы, 3 = отдых и тело, 4 = желания, 5 = отношение к себе
+const questions = [
+  {
+    pair: 1,
+    text: "Ты закончила важное дело, которое потребовало много сил. Что происходит внутри?",
+    options: [
+      { text: "Радуюсь результату и позволяю себе почувствовать удовлетворение", score: 0 },
+      { text: "Испытываю облегчение, но довольно быстро думаю о следующей задаче", score: 1 },
+      { text: "Сначала замечаю, что можно было сделать лучше", score: 2 },
+      { text: "Смогу поверить, что справилась хорошо, только если это подтвердят другие", score: 2 },
+    ]
+  },
+  {
+    pair: 1,
+    text: "Когда тебя искренне хвалят, ты:",
+    options: [
+      { text: "Принимаешь похвалу и благодаришь", score: 0 },
+      { text: "Радуешься, хотя внутри немного неловко", score: 1 },
+      { text: "Думаешь, что человек преувеличивает", score: 2 },
+      { text: "Сразу обесцениваешь результат или переводишь разговор на другую тему", score: 2 },
+    ]
+  },
+  {
+    pair: 2,
+    text: "Близкий человек просит о помощи, но у тебя совсем нет сил. Что ты делаешь?",
+    options: [
+      { text: "Честно говорю, что сейчас не могу", score: 0 },
+      { text: "Предлагаю помочь позже или в том объёме, который мне посилен", score: 1 },
+      { text: "Помогаю, хотя внутри понимаю, что не хочу", score: 2 },
+      { text: "Помогаю, а потом злюсь на человека и на себя", score: 2 },
+    ]
+  },
+  {
+    pair: 2,
+    text: "Тебе предлагают встречу в неудобное время. Твоя первая реакция:",
+    options: [
+      { text: "Сразу говорю, что время мне не подходит, и предлагаю другое", score: 0 },
+      { text: "Сначала сомневаюсь, но всё-таки обозначаю свои условия", score: 1 },
+      { text: "Соглашаюсь, чтобы не создавать неудобств другому человеку", score: 2 },
+      { text: "Автоматически подстраиваюсь и только потом замечаю, что мне неудобно", score: 2 },
+    ]
+  },
+  {
+    pair: 3,
+    text: "У тебя появился свободный вечер: без работы, телефона и обязательных дел. Как ты себя чувствуешь?",
+    options: [
+      { text: "Хорошо: могу отдохнуть или заняться тем, что хочется", score: 0 },
+      { text: "Немного непривычно, но постепенно расслабляюсь", score: 1 },
+      { text: "Начинаю тревожиться из-за того, что могла бы сделать что-то полезное", score: 2 },
+      { text: "Быстро нахожу себе занятие, потому что оставаться в тишине некомфортно", score: 2 },
+    ]
+  },
+  {
+    pair: 3,
+    text: "Ты замечаешь усталость и понимаешь, что нагрузка стала слишком большой. Что делаешь?",
+    options: [
+      { text: "Пересматриваю планы и даю себе восстановиться", score: 0 },
+      { text: "Стараюсь снизить нагрузку, хотя не всегда получается", score: 1 },
+      { text: "Продолжаю делать всё запланированное, пока совсем не закончатся силы", score: 2 },
+      { text: "Злюсь на себя за слабость и заставляю собраться", score: 2 },
+    ]
+  },
+  {
+    pair: 4,
+    text: "Тебя спрашивают: «Чего ты хочешь для себя в ближайшие месяцы?» Что происходит внутри?",
+    options: [
+      { text: "Я могу назвать несколько конкретных желаний", score: 0 },
+      { text: "Примерно понимаю, но мне трудно сформулировать", score: 1 },
+      { text: "Сначала думаю о том, что правильно, разумно и возможно", score: 2 },
+      { text: "Не знаю: давно больше ориентируюсь на потребности других людей", score: 2 },
+    ]
+  },
+  {
+    pair: 4,
+    text: "У тебя есть выбор между тем, что действительно интересно, и тем, что окружающие считают правильным. Ты:",
+    options: [
+      { text: "Прислушиваюсь к советам, но решение принимаю сама", score: 0 },
+      { text: "Долго сомневаюсь, но могу выбрать своё", score: 1 },
+      { text: "Скорее выбираю понятный и одобряемый вариант", score: 2 },
+      { text: "Откладываю решение, потому что боюсь ошибиться или разочаровать других", score: 2 },
+    ]
+  },
+  {
+    pair: 5,
+    text: "Когда ты смотришь на себя в зеркало, первой чаще появляется мысль:",
+    options: [
+      { text: "Нейтральная или доброжелательная", score: 0 },
+      { text: "Замечаю и то, что нравится, и то, что хотелось бы изменить", score: 1 },
+      { text: "Сразу обращаю внимание на недостатки", score: 2 },
+      { text: "Стараюсь не рассматривать себя слишком долго", score: 2 },
+    ]
+  },
+  {
+    pair: 5,
+    text: "Ты допустила ошибку. Как обычно реагируешь?",
+    options: [
+      { text: "Расстраиваюсь, но думаю, как исправить ситуацию", score: 0 },
+      { text: "Сначала критикую себя, но постепенно успокаиваюсь", score: 1 },
+      { text: "Долго прокручиваю произошедшее и ругаю себя", score: 2 },
+      { text: "Воспринимаю ошибку как подтверждение, что со мной что-то не так", score: 2 },
+    ]
+  }
+];
+
+const pairs = {
+  1: {
+    name: "ценность своих результатов",
+    text: "Ты можешь быстро обесценивать сделанное, переводить внимание на следующую задачу или ждать внешнего подтверждения. Из-за этого даже реальные достижения не становятся внутренней опорой."
+  },
+  2: {
+    name: "личные границы",
+    text: "Ты можешь понимать, что устала, не хочешь или тебе неудобно, но всё равно соглашаться. В такие моменты контакт с собой есть — просто потребности другого человека автоматически становятся важнее твоих."
+  },
+  3: {
+    name: "отдых и сигналы тела",
+    text: "Тебе может быть сложно остановиться до того, как силы полностью закончатся. Отдых воспринимается не как необходимость, а как что-то, что сначала нужно заслужить."
+  },
+  4: {
+    name: "собственные желания",
+    text: "Перед тем как спросить себя «чего хочу я?», ты можешь автоматически проверять, разумно ли это, удобно ли другим и получишь ли ты одобрение."
+  },
+  5: {
+    name: "отношение к себе",
+    text: "Твой внутренний взгляд может быть строже, чем отношение окружающих. Недостатки и ошибки замечаются быстрее, чем достоинства, усилия и реальные результаты."
+  }
+};
+
+const scoreBands = [
+  {
+    max: 5,
+    title: "Ты в целом остаёшься <em>на своей стороне</em>",
+    text: "Ты умеешь замечать свои желания, учитывать состояние и принимать решения не только из чувства долга. Это не значит, что ты никогда не сомневаешься или всегда легко выбираешь себя. Но контакт с собственными чувствами и потребностями у тебя сохраняется. Сейчас тебе важнее не «возвращать себя», а замечать отдельные ситуации, в которых ясности всё-таки не хватает.",
+    offerIntro: "Контакт с собой у тебя есть. Но если сейчас существует конкретная ситуация, в которой ты не можешь принять решение или понять свои настоящие чувства, её можно отдельно посмотреть через Таро."
+  },
+  {
+    max: 12,
+    title: "Ты слышишь себя, <em>но не всегда выбираешь</em>",
+    text: "Ты часто понимаешь, чего хочешь и что чувствуешь. Но когда появляется страх осуждения, чувство вины, необходимость быть хорошей или желание всё сделать правильно, собственный голос становится тише. Из-за этого ты можешь согласиться, хотя хотела отказаться, продолжить работать через усталость или отложить желание, которое кажется несвоевременным.",
+    offerIntro: "Ты уже замечаешь, где перестаёшь себя учитывать. Следующий шаг — понять, что именно каждый раз мешает выбрать себя и изменить привычную реакцию."
+  },
+  {
+    max: 20,
+    title: "Твой внутренний голос часто <em>теряется среди «надо»</em>",
+    text: "Похоже, ты долго справлялась, подстраивалась, контролировала и откладывала себя на потом. Поэтому сейчас может быть сложно понять, где твоё настоящее желание, а где привычка быть удобной, сильной или правильной. Это не означает, что с тобой что-то не так. Скорее, пришло время перестать требовать от себя ещё больше и честно посмотреть, что забирает контакт с собой.",
+    offerIntro: "Сейчас тебе может быть сложно самостоятельно отделить своё желание от усталости, страха и чужих ожиданий. Расклад поможет спокойно разложить ситуацию по частям и увидеть, с чего начать."
+  }
+];
+
+const sphereOptions = [
+  { key: "money", label: "В деньгах", clause: "в деньгах" },
+  { key: "relationships", label: "В отношениях", clause: "в отношениях" },
+  { key: "visibility", label: "В проявленности", clause: "в проявленности" },
+  { key: "self", label: "В отношении к себе", clause: "в отношении к себе" },
+  { key: "unclear", label: "Пока не могу понять", clause: null }
+];
+
+/* ===== ANALYTICS ===== */
+function trackEvent(name, params) {
+  try {
+    if (typeof window.gtag === 'function') window.gtag('event', name, params || {});
+    if (typeof window.ym === 'function') window.ym(0, 'reachGoal', name, params || {});
+  } catch (e) {}
+}
+
+/* ===== STATE ===== */
+let current = 0;
+let answers = new Array(questions.length).fill(null);
+let topPairs = [];
+let selectedSphere = null;
+
+function startQuiz() {
+  trackEvent('quiz_start', {});
+  showScreen('screen-question');
+  renderQuestion();
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  el.classList.add('active');
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = '';
+}
+
+function renderQuestion() {
+  const q = questions[current];
+  document.getElementById('q-number').textContent = `Вопрос ${String(current + 1).padStart(2, '0')}`;
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('progress-label').textContent = `${current + 1} / ${questions.length}`;
+  document.getElementById('progress-fill').style.width = `${((current) / questions.length) * 100}%`;
+
+  const wrap = document.getElementById('options-wrap');
+  wrap.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option' + (answers[current] === i ? ' selected' : '');
+    btn.innerHTML = `<span class="option-dot"></span><span>${opt.text}</span>`;
+    btn.onclick = () => selectOption(i);
+    wrap.appendChild(btn);
+  });
+
+  document.getElementById('btn-next').disabled = answers[current] === null;
+  document.getElementById('btn-back').style.display = current === 0 ? 'none' : 'block';
+
+  const isLast = current === questions.length - 1;
+  document.getElementById('btn-next').textContent = isLast ? 'Показать результат →' : 'Следующий вопрос →';
+}
+
+function selectOption(idx) {
+  answers[current] = idx;
+  document.querySelectorAll('#options-wrap .option').forEach((el, i) => {
+    el.classList.toggle('selected', i === idx);
+  });
+  document.getElementById('btn-next').disabled = false;
+}
+
+function nextQuestion() {
+  if (current < questions.length - 1) {
+    current++;
+    renderQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function prevQuestion() {
+  if (current > 0) {
+    current--;
+    renderQuestion();
+  }
+}
+
+function showResult() {
+  trackEvent('quiz_complete', {});
+
+  const score = answers.reduce((sum, ansIdx, qIdx) => {
+    if (ansIdx === null) return sum;
+    return sum + questions[qIdx].options[ansIdx].score;
+  }, 0);
+
+  document.getElementById('progress-fill').style.width = '100%';
+
+  const band = scoreBands.find(b => score <= b.max);
+  document.getElementById('result-title').innerHTML = band.title;
+  document.getElementById('result-main').textContent = band.text;
+  document.getElementById('offer-intro').textContent = band.offerIntro;
+
+  // pair scores
+  const pairScores = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+  questions.forEach((q, qi) => {
+    const ansIdx = answers[qi];
+    if (ansIdx === null) return;
+    pairScores[q.pair] += q.options[ansIdx].score;
+  });
+  const maxPairScore = Math.max(...Object.values(pairScores));
+  topPairs = Object.keys(pairScores)
+    .filter(k => pairScores[k] === maxPairScore)
+    .map(Number)
+    .slice(0, 2);
+
+  if (topPairs.length === 2) {
+    document.getElementById('point-label').textContent = 'У тебя выделились две связанные темы';
+    document.getElementById('point-name').textContent = `${pairs[topPairs[0]].name} и ${pairs[topPairs[1]].name}`;
+    document.getElementById('point-text').textContent = `${pairs[topPairs[0]].text} ${pairs[topPairs[1]].text}`;
+  } else {
+    document.getElementById('point-label').textContent = 'Главная точка внимания';
+    document.getElementById('point-name').textContent = pairs[topPairs[0]].name;
+    document.getElementById('point-text').textContent = pairs[topPairs[0]].text;
+  }
+
+  // sphere buttons
+  const sphereWrap = document.getElementById('sphere-options');
+  sphereWrap.innerHTML = '';
+  selectedSphere = null;
+  document.getElementById('offer-block').classList.remove('open');
+  sphereOptions.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'sphere-option';
+    btn.textContent = opt.label;
+    btn.onclick = () => selectSphere(opt, btn);
+    sphereWrap.appendChild(btn);
+  });
+
+  showScreen('screen-result');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function selectSphere(opt, btnEl) {
+  selectedSphere = opt;
+  document.querySelectorAll('.sphere-option').forEach(el => el.classList.remove('selected'));
+  btnEl.classList.add('selected');
+  trackEvent('sphere_selected', { sphere: opt.key });
+
+  updateMessagePreview();
+  const offerBlock = document.getElementById('offer-block');
+  if (!offerBlock.classList.contains('open')) {
+    offerBlock.classList.add('open');
+    setTimeout(() => {
+      offerBlock.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 150);
+  }
+}
+
+function buildMessage() {
+  const pairNames = topPairs.map(p => pairs[p].name).join(' и ');
+  let sphereClause = ' Пока сложно сказать, где именно это проявляется сильнее всего.';
+  if (selectedSphere && selectedSphere.clause) {
+    sphereClause = ` Особенно это проявляется ${selectedSphere.clause}.`;
+  }
+  return `Привет! Я прошла тест «Насколько хорошо ты сейчас слышишь себя?». Моя главная тема — ${pairNames}.${sphereClause} Хочу заказать расклад «Где я теряю себя и как к себе вернуться?».`;
+}
+
+function updateMessagePreview() {
+  document.getElementById('message-preview').textContent = '«' + buildMessage() + '»';
+}
+
+function orderTelegram() {
+  const msg = buildMessage();
+  trackEvent('order_click', { channel: 'telegram', sphere: selectedSphere ? selectedSphere.key : null, pairs: topPairs });
+  window.open('https://t.me/jain1109?text=' + encodeURIComponent(msg), '_blank');
+}
+
+function orderVk() {
+  const msg = buildMessage();
+  trackEvent('order_click', { channel: 'vk', sphere: selectedSphere ? selectedSphere.key : null, pairs: topPairs });
+
+  const btn = document.getElementById('btn-order-vk');
+  const original = btn.textContent;
+
+  const openVk = () => {
+    window.open('https://vk.ru/im?sel=-224753072', '_blank');
+    setTimeout(() => { btn.textContent = original; }, 1500);
+  };
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(msg).then(() => {
+      btn.textContent = 'Скопировано ✓';
+      setTimeout(openVk, 600);
+    }).catch(() => {
+      openVk();
+    });
+  } else {
+    openVk();
+  }
+}
+
+function restartQuiz() {
+  current = 0;
+  answers = new Array(questions.length).fill(null);
+  topPairs = [];
+  selectedSphere = null;
+  showScreen('screen-start');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
